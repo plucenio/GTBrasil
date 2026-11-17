@@ -1,0 +1,7 @@
+Quero criar um aplicativo onde na tela principal o usuário tenha a opção de escolher um entre dois carros (imagens em modelo 8 bit) Um carro chamado chevrolet chevette e outro chamado ford corcel.
+Os carros tem algumas caracteristicas como potencia, frenagem, dirigibilidade e pneus.
+Cada uma dessas caracteristicas vai se 1 a 10.
+monte esses dois carros com numeros randomicos no momento, mas futuramente eu quero poder alterar isso.
+Depois que o usuário escolher esse carro o app deve entrar no dashboard, como se fosse uma garagem do carro. a partir dessa garagem o usuario pode acessar corrida, mecanica e loja de carros. cada carro tem um valor e tem que ser comprado. O chevette vale 6 mil e o corcel vale 5 mil. o usuario começa com um caixa de 8 mil.
+O botão que acessa corrida inicialmente pode ficar sem ação, o mesmo vale para loja e mecanica no momento.
+Para montar as telas use como referencia o game gran turismo 2 do play station.

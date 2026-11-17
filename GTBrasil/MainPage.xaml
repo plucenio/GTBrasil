@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:GTBrasil.Models"
+             x:Class="GTBrasil.MainPage"
+             x:DataType="local:MainPage"
+             xmlns:local="clr-namespace:GTBrasil"
+             Shell.NavBarIsVisible="False"
+             Background="#080D18">
+    <Grid RowDefinitions="*">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20,20,20,28" Spacing="22">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                    <Label Text="GT / BRASIL"
+                           FontSize="26"
+                           FontAttributes="Bold"
+                           TextColor="#F4F7FC"
+                           CharacterSpacing="1.5" />
+                    <Label Grid.Row="1"
+                           Text="GARAGE EDITION"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           CharacterSpacing="2"
+                           TextColor="#39D8E8" />
+                    <Border Grid.Column="1"
+                            Grid.RowSpan="2"
+                            Padding="12,8"
+                            VerticalOptions="Center"
+                            Background="#142238"
+                            Stroke="#263B57"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 8">
+                        <Label Text="{Binding CashDisplay}"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="#F5C451"
+                               AutomationId="cash-balance" />
+                    </Border>
+                </Grid>
+
+                <VerticalStackLayout IsVisible="{Binding IsCarSelectionVisible}" Spacing="16">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="ESCOLHA SEU CARRO"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               CharacterSpacing="1"
+                               TextColor="#F4F7FC" />
+                        <Label Text="DOIS CLÁSSICOS. QUAL VAI PARA A SUA GARAGEM?"
+                               FontSize="11"
+                               CharacterSpacing="0.5"
+                               TextColor="#A8B6C9" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Cars}" Spacing="12">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Car">
+                                <Border Padding="14"
+                                        Background="#111B2B"
+                                        Stroke="#263B57"
+                                        StrokeThickness="1"
+                                        StrokeShape="RoundRectangle 10"
+                                        AutomationId="{Binding AutomationId}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="Stroke" Value="#39D8E8" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCarTapped" />
+                                    </Border.GestureRecognizers>
+                                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="10">
+                                        <Grid Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <VerticalStackLayout Spacing="3">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#F4F7FC" />
+                                                <Label Text="{Binding Category}"
+                                                       FontSize="10"
+                                                       FontAttributes="Bold"
+                                                       CharacterSpacing="1"
+                                                       TextColor="#39D8E8" />
+                                            </VerticalStackLayout>
+                                            <Image Grid.Column="1"
+                                                   Source="{Binding Image}"
+                                                   WidthRequest="142"
+                                                   HeightRequest="78"
+                                                   Aspect="AspectFit"
+                                                   SemanticProperties.Description="{Binding ImageDescription}" />
+                                        </Grid>
+
+                                        <Grid Grid.Row="1"
+                                              Grid.ColumnSpan="2"
+                                              ColumnDefinitions="*,*"
+                                              RowDefinitions="Auto,Auto"
+                                              ColumnSpacing="16"
+                                              RowSpacing="8">
+                                            <VerticalStackLayout Spacing="3">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <Label Text="POTÊNCIA" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                                    <Label Grid.Column="1" Text="{Binding Power, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                                </Grid>
+                                                <ProgressBar Progress="{Binding PowerProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <Label Text="FRENAGEM" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                                    <Label Grid.Column="1" Text="{Binding Braking, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                                </Grid>
+                                                <ProgressBar Progress="{Binding BrakingProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="1" Spacing="3">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <Label Text="DIRIGIBILIDADE" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                                    <Label Grid.Column="1" Text="{Binding Handling, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                                </Grid>
+                                                <ProgressBar Progress="{Binding HandlingProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                            </VerticalStackLayout>
+                                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="3">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <Label Text="PNEUS" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                                    <Label Grid.Column="1" Text="{Binding Tires, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                                </Grid>
+                                                <ProgressBar Progress="{Binding TiresProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                            </VerticalStackLayout>
+                                        </Grid>
+
+                                        <Label Grid.Row="2"
+                                               Text="{Binding Price, StringFormat='PREÇO  R$ {0:N0}'}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               CharacterSpacing="0.5"
+                                               TextColor="#F5C451"
+                                               VerticalOptions="Center" />
+                                        <Label Grid.Row="2"
+                                               Grid.Column="1"
+                                               Text="NA GARAGEM"
+                                               IsVisible="{Binding IsOwned}"
+                                               FontSize="10"
+                                               FontAttributes="Bold"
+                                               TextColor="#72E0A2"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Border Padding="14"
+                            Background="#142238"
+                            Stroke="#263B57"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{Binding SelectionSummary}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="#F4F7FC"
+                                   AutomationId="selection-summary" />
+                            <Label Text="{Binding Notice}"
+                                   IsVisible="{Binding HasNotice}"
+                                   FontSize="12"
+                                   TextColor="#FF9B86" />
+                            <Button Text="{Binding PurchaseButtonText}"
+                                    Clicked="OnPurchaseClicked"
+                                    IsEnabled="{Binding HasSelectedCar}"
+                                    Background="#F5C451"
+                                    TextColor="#111827"
+                                    FontAttributes="Bold"
+                                    CharacterSpacing="0.5"
+                                    CornerRadius="7"
+                                    HeightRequest="48"
+                                    AutomationId="purchase-button" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsGarageVisible}" Spacing="16">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="GARAGEM PRINCIPAL"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               CharacterSpacing="1"
+                               TextColor="#F4F7FC" />
+                        <Label Text="SEU PRÓXIMO CAPÍTULO COMEÇA AQUI"
+                               FontSize="11"
+                               CharacterSpacing="0.5"
+                               TextColor="#A8B6C9" />
+                    </VerticalStackLayout>
+
+                    <Border Padding="16"
+                            Background="#111B2B"
+                            Stroke="#263B57"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            AutomationId="garage-car-card">
+                        <VerticalStackLayout Spacing="13">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding GarageCar.Name}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="#F4F7FC" />
+                                <Label Grid.Column="1"
+                                       Text="ADQUIRIDO"
+                                       FontSize="10"
+                                       FontAttributes="Bold"
+                                       TextColor="#72E0A2"
+                                       VerticalOptions="Center" />
+                            </Grid>
+                            <Image Source="{Binding GarageCar.Image}"
+                                   HeightRequest="142"
+                                   Aspect="AspectFit"
+                                   SemanticProperties.Description="{Binding GarageCar.ImageDescription}"
+                                   AutomationId="garage-car-image" />
+                            <Label Text="{Binding GarageCar.Category}"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   CharacterSpacing="1"
+                                   TextColor="#39D8E8" />
+
+                            <Grid ColumnDefinitions="*,*"
+                                  RowDefinitions="Auto,Auto"
+                                  ColumnSpacing="18"
+                                  RowSpacing="12">
+                                <VerticalStackLayout Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="POTÊNCIA" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Power, StringFormat='{0}/10'}" FontSize="11" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.PowerProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="6" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="FRENAGEM" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Braking, StringFormat='{0}/10'}" FontSize="11" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.BrakingProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="6" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Row="1" Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="DIRIGIBILIDADE" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Handling, StringFormat='{0}/10'}" FontSize="11" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.HandlingProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="6" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="4">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="PNEUS" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Tires, StringFormat='{0}/10'}" FontSize="11" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.TiresProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="6" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label Text="SELECIONE UMA ATIVIDADE"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           CharacterSpacing="1"
+                           TextColor="#A8B6C9" />
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <Button Text="CORRIDA&#10;EM BREVE"
+                                IsEnabled="False"
+                                Background="#183148"
+                                TextColor="#B6C3D3"
+                                FontSize="11"
+                                FontAttributes="Bold"
+                                CornerRadius="7"
+                                HeightRequest="62"
+                                AutomationId="race-button" />
+                        <Button Grid.Column="1"
+                                Text="MECÂNICA&#10;EM BREVE"
+                                IsEnabled="False"
+                                Background="#183148"
+                                TextColor="#B6C3D3"
+                                FontSize="11"
+                                FontAttributes="Bold"
+                                CornerRadius="7"
+                                HeightRequest="62"
+                                AutomationId="mechanics-button" />
+                        <Button Grid.Column="2"
+                                Text="LOJA&#10;EM BREVE"
+                                IsEnabled="False"
+                                Background="#183148"
+                                TextColor="#B6C3D3"
+                                FontSize="11"
+                                FontAttributes="Bold"
+                                CornerRadius="7"
+                                HeightRequest="62"
+                                AutomationId="shop-button" />
+                    </Grid>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
