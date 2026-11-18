@@ -439,7 +439,7 @@
                                     <ProgressBar Progress="{Binding GarageCar.TiresProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
                                 </VerticalStackLayout>
                             </Grid>
-                            <Label Text="POTÊNCIA INFLUENCIA AS RETAS; FRENAGEM, DIRIGIBILIDADE E PNEUS AFETAM AS CURVAS."
+                            <Label Text="{Binding RacePaceWeightsDisplay}"
                                    FontSize="9"
                                    CharacterSpacing="0.2"
                                    TextColor="#A8B6C9" />

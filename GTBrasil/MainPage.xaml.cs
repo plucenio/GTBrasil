@@ -160,7 +160,10 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	public string RacePaceDisplay => GarageCar is null
 		? "RITMO --"
-		: $"RITMO {(GarageCar.Power * 0.4 + GarageCar.Braking * 0.2 + GarageCar.Handling * 0.25 + GarageCar.Tires * 0.15):0.0}/10";
+		: $"RITMO {interlagosTrack.PaceWeights.CalculateScore(GarageCar):0.0}/10";
+
+	public string RacePaceWeightsDisplay
+		=> $"POTÊNCIA ×{interlagosTrack.PaceWeights.Power}  •  DIRIGIBILIDADE ×{interlagosTrack.PaceWeights.Handling}  •  PNEUS ×{interlagosTrack.PaceWeights.Tires}  •  FREIOS ×{interlagosTrack.PaceWeights.Braking}";
 
 	public string GarageSubtitle => HasGarageCar
 		? "SEU PRÓXIMO CAPÍTULO COMEÇA AQUI"

@@ -52,6 +52,8 @@ public sealed class InterlagosTrackDrawable : IDrawable
 	private readonly float trackLength;
 	private float distance;
 
+	public TrackPaceWeights PaceWeights { get; } = new(5, 3, 2, 2);
+
 	public InterlagosTrackDrawable()
 	{
 		segmentLengths = new float[Circuit.Length];
@@ -78,9 +80,7 @@ public sealed class InterlagosTrackDrawable : IDrawable
 		}
 
 		var segmentIndex = FindSegmentIndex(distance);
-		var speedFactor = Circuit[segmentIndex].IsCorner
-			? GetCornerSpeedFactor(car)
-			: 0.4f + (car.Power / 10f) * 0.6f;
+		var speedFactor = PaceWeights.GetSpeedFactor(car, Circuit[segmentIndex].IsCorner);
 
 		distance += (float)elapsedSeconds * BaseSpeed * speedFactor;
 		while (distance >= trackLength)
@@ -106,15 +106,6 @@ public sealed class InterlagosTrackDrawable : IDrawable
 		DrawStartLine(canvas, offsetX, offsetY, scale);
 		DrawCarMarker(canvas, offsetX, offsetY, scale);
 		canvas.RestoreState();
-	}
-
-	private static float GetCornerSpeedFactor(Car car)
-	{
-		var power = car.Power / 10f;
-		var braking = car.Braking / 10f;
-		var handling = car.Handling / 10f;
-		var tires = car.Tires / 10f;
-		return 0.2f + power * 0.12f + braking * 0.22f + handling * 0.26f + tires * 0.2f;
 	}
 
 	private static void DrawCircuitLine(ICanvas canvas, float offsetX, float offsetY, float scale, float width, Color color)
@@ -211,4 +202,24 @@ public sealed class InterlagosTrackDrawable : IDrawable
 	}
 
 	private readonly record struct CircuitPoint(float X, float Y, bool IsCorner);
+}
+
+public readonly record struct TrackPaceWeights(int Power, int Handling, int Tires, int Braking)
+{
+	public double CalculateScore(Car car)
+	{
+		var totalWeight = Power + Handling + Tires + Braking;
+		return (car.Power * Power
+			+ car.Handling * Handling
+			+ car.Tires * Tires
+			+ car.Braking * Braking) / (double)totalWeight;
+	}
+
+	public float GetSpeedFactor(Car car, bool isCorner)
+	{
+		var normalizedScore = (CalculateScore(car) - 1) / 9;
+		return (float)(isCorner
+			? 0.3 + normalizedScore * 0.7
+			: 0.45 + normalizedScore * 0.55);
+	}
 }
