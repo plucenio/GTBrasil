@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text.Json;
 using GTBrasil.Models;
 
 namespace GTBrasil;
@@ -10,29 +11,33 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	private const string CashPreferenceKey = "garage.v2.cash";
 	private const string ActiveCarPreferenceKey = "garage.v2.active-car";
 	private const string OwnedCarPreferencePrefix = "garage.v2.owned.";
+	private static readonly JsonSerializerOptions CatalogJsonOptions = new()
+	{
+		PropertyNameCaseInsensitive = true
+	};
 
 	private Car? selectedCar;
 	private Car? garageCar;
 	private int cashBalance;
 	private bool isClassifiedsVisible;
+	private bool carsLoaded;
 	private string notice = string.Empty;
 
 	public MainPage()
 	{
 		InitializeComponent();
-		Cars = CreateCars();
+		Cars = new ObservableCollection<Car>();
 		CashBalance = Preferences.Get(CashPreferenceKey, StartingCash);
-
-		foreach (var car in Cars)
-		{
-			car.IsOwned = Preferences.Get(GetOwnedCarPreferenceKey(car), false);
-		}
-
-		var activeCarId = Preferences.Get(ActiveCarPreferenceKey, string.Empty);
-		GarageCar = Cars.FirstOrDefault(car => car.Id == activeCarId && car.IsOwned)
-			?? Cars.FirstOrDefault(car => car.IsOwned);
-
 		BindingContext = this;
+	}
+
+	protected override async void OnAppearing()
+	{
+		base.OnAppearing();
+		if (!carsLoaded)
+		{
+			await LoadCarsAsync();
+		}
 	}
 
 	public ObservableCollection<Car> Cars { get; }
@@ -154,34 +159,84 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			? "LEVAR À GARAGEM"
 			: $"COMPRAR POR R$ {SelectedCar.Price:N0}";
 
-	private static ObservableCollection<Car> CreateCars()
+	private async Task LoadCarsAsync()
 	{
-		return new ObservableCollection<Car>
+		await using var stream = await FileSystem.OpenAppPackageFileAsync("cars.json");
+		var catalog = await JsonSerializer.DeserializeAsync<CarCatalog>(stream, CatalogJsonOptions)
+			?? throw new InvalidDataException("The car catalog is empty or invalid.");
+		var definitions = catalog.Cars
+			?? throw new InvalidDataException("The car catalog must define a cars list.");
+
+		if (definitions.Count == 0)
 		{
-			new(
-				"chevette",
-				"Chevrolet Chevette 1983",
-				"CLÁSSICO NACIONAL  •  TRAÇÃO TRASEIRA",
-				"chevette.png",
-				6_000,
-				Random.Shared.Next(1, 11),
-				Random.Shared.Next(1, 11),
-				Random.Shared.Next(1, 11),
-				Random.Shared.Next(1, 11)),
-			new(
-				"corcel",
-				"Ford Corcel",
-				"CLÁSSICO NACIONAL  •  ESPÍRITO DE ESTRADA",
-				"corcel.png",
-				5_000,
-				Random.Shared.Next(1, 11),
-				Random.Shared.Next(1, 11),
-				Random.Shared.Next(1, 11),
-				Random.Shared.Next(1, 11))
-		};
+			throw new InvalidDataException("The car catalog must contain at least one car.");
+		}
+
+		var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		foreach (var definition in definitions)
+		{
+			var stats = ValidateDefinition(definition, ids);
+			var car = new Car(
+				definition.Id,
+				definition.Brand,
+				definition.Model,
+				definition.Year,
+				definition.Category,
+				definition.Image,
+				definition.Price,
+				CreateRandomStat(stats.Power),
+				CreateRandomStat(stats.Braking),
+				CreateRandomStat(stats.Handling),
+				CreateRandomStat(stats.Tires))
+			{
+				IsOwned = Preferences.Get(GetOwnedCarPreferenceKey(definition.Id), false)
+			};
+			Cars.Add(car);
+		}
+
+		var activeCarId = Preferences.Get(ActiveCarPreferenceKey, string.Empty);
+		GarageCar = Cars.FirstOrDefault(car => car.Id == activeCarId && car.IsOwned)
+			?? Cars.FirstOrDefault(car => car.IsOwned);
+		carsLoaded = true;
 	}
 
-	private static string GetOwnedCarPreferenceKey(Car car) => $"{OwnedCarPreferencePrefix}{car.Id}";
+	private static (StatRange Power, StatRange Braking, StatRange Handling, StatRange Tires)
+		ValidateDefinition(CarDefinition? definition, ISet<string> ids)
+	{
+		if (definition is null
+			|| string.IsNullOrWhiteSpace(definition.Id)
+			|| string.IsNullOrWhiteSpace(definition.Brand)
+			|| string.IsNullOrWhiteSpace(definition.Model)
+			|| string.IsNullOrWhiteSpace(definition.Category)
+			|| string.IsNullOrWhiteSpace(definition.Image)
+			|| definition.Price <= 0
+			|| !ids.Add(definition.Id))
+		{
+			throw new InvalidDataException($"Invalid or duplicate car definition: '{definition?.Id}'.");
+		}
+
+		var stats = definition.Stats
+			?? throw new InvalidDataException($"Missing stat ranges for car '{definition.Id}'.");
+		return (
+			ValidateStatRange(definition.Id, nameof(stats.Power), stats.Power),
+			ValidateStatRange(definition.Id, nameof(stats.Braking), stats.Braking),
+			ValidateStatRange(definition.Id, nameof(stats.Handling), stats.Handling),
+			ValidateStatRange(definition.Id, nameof(stats.Tires), stats.Tires));
+	}
+
+	private static StatRange ValidateStatRange(string carId, string statName, StatRange? range)
+	{
+		if (range is null || range.Min < 1 || range.Max > 10 || range.Min > range.Max)
+		{
+			throw new InvalidDataException($"Invalid {statName} range for car '{carId}'.");
+		}
+
+		return range;
+	}
+
+	private static int CreateRandomStat(StatRange range) => Random.Shared.Next(range.Min, range.Max + 1);
+
+	private static string GetOwnedCarPreferenceKey(string carId) => $"{OwnedCarPreferencePrefix}{carId}";
 
 	private void OnClassifiedsClicked(object? sender, EventArgs e)
 	{
@@ -226,7 +281,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			CashBalance -= car.Price;
 			car.IsOwned = true;
 			Preferences.Set(CashPreferenceKey, CashBalance);
-			Preferences.Set(GetOwnedCarPreferenceKey(car), true);
+			Preferences.Set(GetOwnedCarPreferenceKey(car.Id), true);
 		}
 
 		GarageCar = car;

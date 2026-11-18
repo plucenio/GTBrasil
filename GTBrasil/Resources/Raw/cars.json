@@ -1,0 +1,109 @@
+{
+  "cars": [
+    {
+      "id": "chevette",
+      "brand": "Chevrolet",
+      "model": "Chevette",
+      "year": 1983,
+      "category": "CLÁSSICO NACIONAL  •  TRAÇÃO TRASEIRA",
+      "image": "chevette.png",
+      "price": 6000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    },
+    {
+      "id": "corcel",
+      "brand": "Ford",
+      "model": "Corcel",
+      "year": null,
+      "category": "CLÁSSICO NACIONAL  •  ESPÍRITO DE ESTRADA",
+      "image": "corcel.png",
+      "price": 5000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    },
+    {
+      "id": "corsa",
+      "brand": "Chevrolet",
+      "model": "Corsa",
+      "year": 1998,
+      "category": "HATCH COMPACTO  •  1990s",
+      "image": "corsa.png",
+      "price": 16000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    },
+    {
+      "id": "celta",
+      "brand": "Chevrolet",
+      "model": "Celta",
+      "year": 2001,
+      "category": "HATCH COMPACTO  •  2000s",
+      "image": "celta.png",
+      "price": 18000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    },
+    {
+      "id": "escort",
+      "brand": "Ford",
+      "model": "Escort",
+      "year": 1993,
+      "category": "HATCH MÉDIO  •  1990s",
+      "image": "escort.png",
+      "price": 11000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    },
+    {
+      "id": "gol",
+      "brand": "Volkswagen",
+      "model": "Gol",
+      "year": 1994,
+      "category": "HATCH NACIONAL  •  1990s",
+      "image": "gol.png",
+      "price": 13000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    },
+    {
+      "id": "uno",
+      "brand": "Fiat",
+      "model": "Uno",
+      "year": 1994,
+      "category": "HATCH COMPACTO  •  1990s",
+      "image": "uno.png",
+      "price": 12000,
+      "stats": {
+        "power": { "min": 1, "max": 10 },
+        "braking": { "min": 1, "max": 10 },
+        "handling": { "min": 1, "max": 10 },
+        "tires": { "min": 1, "max": 10 }
+      }
+    }
+  ]
+}

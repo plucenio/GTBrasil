@@ -10,7 +10,9 @@ public sealed class Car : INotifyPropertyChanged
 
 	public Car(
 		string id,
-		string name,
+		string brand,
+		string model,
+		int? year,
 		string category,
 		string image,
 		int price,
@@ -20,7 +22,9 @@ public sealed class Car : INotifyPropertyChanged
 		int tires)
 	{
 		Id = id;
-		Name = name;
+		Brand = brand;
+		Model = model;
+		Year = year;
 		Category = category;
 		Image = image;
 		Price = price;
@@ -34,7 +38,13 @@ public sealed class Car : INotifyPropertyChanged
 
 	public string Id { get; }
 
-	public string Name { get; }
+	public string Brand { get; }
+
+	public string Model { get; }
+
+	public int? Year { get; }
+
+	public string Name => Year is int year ? $"{Brand} {Model} {year}" : $"{Brand} {Model}";
 
 	public string Category { get; }
 

@@ -45,7 +45,7 @@
                                FontAttributes="Bold"
                                CharacterSpacing="1"
                                TextColor="#F4F7FC" />
-                        <Label Text="DOIS CLÁSSICOS À VENDA. ESCOLHA O SEU."
+                        <Label Text="CLÁSSICOS À VENDA. ESCOLHA O SEU."
                                FontSize="11"
                                CharacterSpacing="0.5"
                                TextColor="#A8B6C9" />
