@@ -38,18 +38,28 @@
                     </Border>
                 </Grid>
 
-                <VerticalStackLayout IsVisible="{Binding IsCarSelectionVisible}" Spacing="16">
+                <VerticalStackLayout IsVisible="{Binding IsClassifiedsVisible}" Spacing="16">
                     <VerticalStackLayout Spacing="5">
-                        <Label Text="ESCOLHA SEU CARRO"
+                        <Label Text="CLASSIFICADOS"
                                FontSize="22"
                                FontAttributes="Bold"
                                CharacterSpacing="1"
                                TextColor="#F4F7FC" />
-                        <Label Text="DOIS CLÁSSICOS. QUAL VAI PARA A SUA GARAGEM?"
+                        <Label Text="DOIS CLÁSSICOS À VENDA. ESCOLHA O SEU."
                                FontSize="11"
                                CharacterSpacing="0.5"
                                TextColor="#A8B6C9" />
                     </VerticalStackLayout>
+
+                    <Button Text="VOLTAR À GARAGEM"
+                            Clicked="OnGarageClicked"
+                            Background="#183148"
+                            TextColor="#F4F7FC"
+                            FontSize="11"
+                            FontAttributes="Bold"
+                            CornerRadius="7"
+                            HeightRequest="42"
+                            AutomationId="back-to-garage-button" />
 
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Cars}" Spacing="12">
                         <BindableLayout.ItemTemplate>
@@ -183,7 +193,7 @@
                                FontAttributes="Bold"
                                CharacterSpacing="1"
                                TextColor="#F4F7FC" />
-                        <Label Text="SEU PRÓXIMO CAPÍTULO COMEÇA AQUI"
+                        <Label Text="{Binding GarageSubtitle}"
                                FontSize="11"
                                CharacterSpacing="0.5"
                                TextColor="#A8B6C9" />
@@ -194,6 +204,7 @@
                             Stroke="#263B57"
                             StrokeThickness="1"
                             StrokeShape="RoundRectangle 10"
+                            IsVisible="{Binding HasGarageCar}"
                             AutomationId="garage-car-card">
                         <VerticalStackLayout Spacing="13">
                             <Grid ColumnDefinitions="*,Auto">
@@ -255,6 +266,28 @@
                         </VerticalStackLayout>
                     </Border>
 
+                    <Border Padding="22"
+                            IsVisible="{Binding IsEmptyGarageVisible}"
+                            Background="#111B2B"
+                            Stroke="#263B57"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10"
+                            AutomationId="empty-garage">
+                        <VerticalStackLayout Spacing="10" VerticalOptions="Center">
+                            <Label Text="GARAGEM VAZIA"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   CharacterSpacing="1"
+                                   TextColor="#F4F7FC"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="ESCOLHA SEU PRIMEIRO CLÁSSICO NOS CLASSIFICADOS."
+                                   FontSize="11"
+                                   CharacterSpacing="0.5"
+                                   TextColor="#A8B6C9"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
                     <Label Text="SELECIONE UMA ATIVIDADE"
                            FontSize="11"
                            FontAttributes="Bold"
@@ -271,7 +304,7 @@
                                 HeightRequest="62"
                                 AutomationId="race-button" />
                         <Button Grid.Column="1"
-                                Text="MECÂNICA&#10;EM BREVE"
+                                Text="AUTO PEÇAS&#10;EM BREVE"
                                 IsEnabled="False"
                                 Background="#183148"
                                 TextColor="#B6C3D3"
@@ -279,12 +312,12 @@
                                 FontAttributes="Bold"
                                 CornerRadius="7"
                                 HeightRequest="62"
-                                AutomationId="mechanics-button" />
+                                AutomationId="auto-parts-button" />
                         <Button Grid.Column="2"
-                                Text="LOJA&#10;EM BREVE"
-                                IsEnabled="False"
-                                Background="#183148"
-                                TextColor="#B6C3D3"
+                                Text="CLASSIFICADOS"
+                                Clicked="OnClassifiedsClicked"
+                                Background="#F5C451"
+                                TextColor="#111827"
                                 FontSize="11"
                                 FontAttributes="Bold"
                                 CornerRadius="7"

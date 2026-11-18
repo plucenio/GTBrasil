@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using GTBrasil.Models;
 
 namespace GTBrasil;
@@ -8,11 +7,14 @@ namespace GTBrasil;
 public partial class MainPage : ContentPage, INotifyPropertyChanged
 {
 	private const int StartingCash = 8_000;
-	private const string CashPreferenceKey = "garage.cash";
+	private const string CashPreferenceKey = "garage.v2.cash";
+	private const string ActiveCarPreferenceKey = "garage.v2.active-car";
+	private const string OwnedCarPreferencePrefix = "garage.v2.owned.";
 
 	private Car? selectedCar;
+	private Car? garageCar;
 	private int cashBalance;
-	private bool isGarageVisible;
+	private bool isClassifiedsVisible;
 	private string notice = string.Empty;
 
 	public MainPage()
@@ -23,8 +25,12 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 		foreach (var car in Cars)
 		{
-			car.IsOwned = Preferences.Get($"garage.owned.{car.Id}", false);
+			car.IsOwned = Preferences.Get(GetOwnedCarPreferenceKey(car), false);
 		}
+
+		var activeCarId = Preferences.Get(ActiveCarPreferenceKey, string.Empty);
+		GarageCar = Cars.FirstOrDefault(car => car.Id == activeCarId && car.IsOwned)
+			?? Cars.FirstOrDefault(car => car.IsOwned);
 
 		BindingContext = this;
 	}
@@ -51,11 +57,26 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			OnPropertyChanged(nameof(HasSelectedCar));
 			OnPropertyChanged(nameof(SelectionSummary));
 			OnPropertyChanged(nameof(PurchaseButtonText));
-			OnPropertyChanged(nameof(GarageCar));
 		}
 	}
 
-	public Car? GarageCar => SelectedCar;
+	public Car? GarageCar
+	{
+		get => garageCar;
+		private set
+		{
+			if (garageCar == value)
+			{
+				return;
+			}
+
+			garageCar = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(HasGarageCar));
+			OnPropertyChanged(nameof(IsEmptyGarageVisible));
+			OnPropertyChanged(nameof(GarageSubtitle));
+		}
+	}
 
 	public int CashBalance
 	{
@@ -73,23 +94,31 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		}
 	}
 
-	public bool IsGarageVisible
+	public bool IsClassifiedsVisible
 	{
-		get => isGarageVisible;
+		get => isClassifiedsVisible;
 		private set
 		{
-			if (isGarageVisible == value)
+			if (isClassifiedsVisible == value)
 			{
 				return;
 			}
 
-			isGarageVisible = value;
+			isClassifiedsVisible = value;
 			OnPropertyChanged();
-			OnPropertyChanged(nameof(IsCarSelectionVisible));
+			OnPropertyChanged(nameof(IsGarageVisible));
 		}
 	}
 
-	public bool IsCarSelectionVisible => !IsGarageVisible;
+	public bool IsGarageVisible => !IsClassifiedsVisible;
+
+	public bool HasGarageCar => GarageCar is not null;
+
+	public bool IsEmptyGarageVisible => GarageCar is null;
+
+	public string GarageSubtitle => HasGarageCar
+		? "SEU PRÓXIMO CAPÍTULO COMEÇA AQUI"
+		: "SUA JORNADA COMEÇA NOS CLASSIFICADOS";
 
 	public bool HasSelectedCar => SelectedCar is not null;
 
@@ -114,15 +143,15 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	public string CashDisplay => $"CAIXA  R$ {CashBalance:N0}";
 
 	public string SelectionSummary => SelectedCar is null
-		? "SELECIONE UM MODELO PARA CONTINUAR"
+		? "SELECIONE UM CARRO NOS CLASSIFICADOS"
 		: SelectedCar.IsOwned
 			? $"{SelectedCar.Name} JÁ ESTÁ NA SUA GARAGEM"
 			: $"{SelectedCar.Name}  •  R$ {SelectedCar.Price:N0}";
 
 	public string PurchaseButtonText => SelectedCar is null
-		? "ESCOLHA UM CARRO"
+		? "SELECIONE UM CARRO"
 		: SelectedCar.IsOwned
-			? "ENTRAR NA GARAGEM"
+			? "LEVAR À GARAGEM"
 			: $"COMPRAR POR R$ {SelectedCar.Price:N0}";
 
 	private static ObservableCollection<Car> CreateCars()
@@ -131,7 +160,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		{
 			new(
 				"chevette",
-				"Chevrolet Chevette",
+				"Chevrolet Chevette 1983",
 				"CLÁSSICO NACIONAL  •  TRAÇÃO TRASEIRA",
 				"chevette.png",
 				6_000,
@@ -152,6 +181,22 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		};
 	}
 
+	private static string GetOwnedCarPreferenceKey(Car car) => $"{OwnedCarPreferencePrefix}{car.Id}";
+
+	private void OnClassifiedsClicked(object? sender, EventArgs e)
+	{
+		Notice = string.Empty;
+		SelectedCar = null;
+		IsClassifiedsVisible = true;
+	}
+
+	private void OnGarageClicked(object? sender, EventArgs e)
+	{
+		Notice = string.Empty;
+		SelectedCar = null;
+		IsClassifiedsVisible = false;
+	}
+
 	private void OnCarTapped(object? sender, TappedEventArgs e)
 	{
 		if (sender is Border { BindingContext: Car car })
@@ -163,30 +208,29 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	private void OnPurchaseClicked(object? sender, EventArgs e)
 	{
-		if (SelectedCar is null)
+		var car = SelectedCar;
+		if (car is null)
 		{
 			Notice = "ESCOLHA UM CARRO PARA CONTINUAR.";
 			return;
 		}
 
-		if (SelectedCar.IsOwned)
-		{
-			IsGarageVisible = true;
-			Notice = string.Empty;
-			return;
-		}
-
-		if (CashBalance < SelectedCar.Price)
+		if (!car.IsOwned && CashBalance < car.Price)
 		{
 			Notice = "SALDO INSUFICIENTE PARA COMPRAR ESTE CARRO.";
 			return;
 		}
 
-		CashBalance -= SelectedCar.Price;
-		SelectedCar.IsOwned = true;
-		Preferences.Set(CashPreferenceKey, CashBalance);
-		Preferences.Set($"garage.owned.{SelectedCar.Id}", true);
-		Notice = string.Empty;
-		IsGarageVisible = true;
+		if (!car.IsOwned)
+		{
+			CashBalance -= car.Price;
+			car.IsOwned = true;
+			Preferences.Set(CashPreferenceKey, CashBalance);
+			Preferences.Set(GetOwnedCarPreferenceKey(car), true);
+		}
+
+		GarageCar = car;
+		Preferences.Set(ActiveCarPreferenceKey, car.Id);
+		OnGarageClicked(sender, e);
 	}
 }
