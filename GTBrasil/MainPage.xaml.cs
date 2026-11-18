@@ -184,10 +184,10 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 				definition.Category,
 				definition.Image,
 				definition.Price,
-				CreateRandomStat(stats.Power),
-				CreateRandomStat(stats.Braking),
-				CreateRandomStat(stats.Handling),
-				CreateRandomStat(stats.Tires))
+				stats.Power,
+				stats.Braking,
+				stats.Handling,
+				stats.Tires)
 			{
 				IsOwned = Preferences.Get(GetOwnedCarPreferenceKey(definition.Id), false)
 			};
@@ -200,8 +200,7 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		carsLoaded = true;
 	}
 
-	private static (StatRange Power, StatRange Braking, StatRange Handling, StatRange Tires)
-		ValidateDefinition(CarDefinition? definition, ISet<string> ids)
+	private static CarStats ValidateDefinition(CarDefinition? definition, ISet<string> ids)
 	{
 		if (definition is null
 			|| string.IsNullOrWhiteSpace(definition.Id)
@@ -216,25 +215,21 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		}
 
 		var stats = definition.Stats
-			?? throw new InvalidDataException($"Missing stat ranges for car '{definition.Id}'.");
-		return (
-			ValidateStatRange(definition.Id, nameof(stats.Power), stats.Power),
-			ValidateStatRange(definition.Id, nameof(stats.Braking), stats.Braking),
-			ValidateStatRange(definition.Id, nameof(stats.Handling), stats.Handling),
-			ValidateStatRange(definition.Id, nameof(stats.Tires), stats.Tires));
+			?? throw new InvalidDataException($"Missing stats for car '{definition.Id}'.");
+		ValidateStat(definition.Id, nameof(stats.Power), stats.Power);
+		ValidateStat(definition.Id, nameof(stats.Braking), stats.Braking);
+		ValidateStat(definition.Id, nameof(stats.Handling), stats.Handling);
+		ValidateStat(definition.Id, nameof(stats.Tires), stats.Tires);
+		return stats;
 	}
 
-	private static StatRange ValidateStatRange(string carId, string statName, StatRange? range)
+	private static void ValidateStat(string carId, string statName, int value)
 	{
-		if (range is null || range.Min < 1 || range.Max > 10 || range.Min > range.Max)
+		if (value is < 1 or > 10)
 		{
-			throw new InvalidDataException($"Invalid {statName} range for car '{carId}'.");
+			throw new InvalidDataException($"Invalid {statName} value for car '{carId}'. Expected a value from 1 to 10.");
 		}
-
-		return range;
 	}
-
-	private static int CreateRandomStat(StatRange range) => Random.Shared.Next(range.Min, range.Max + 1);
 
 	private static string GetOwnedCarPreferenceKey(string carId) => $"{OwnedCarPreferencePrefix}{carId}";
 

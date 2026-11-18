@@ -21,23 +21,16 @@ public sealed class CarDefinition
 
 	public int Price { get; set; }
 
-	public CarStatRanges? Stats { get; set; }
+	public CarStats? Stats { get; set; }
 }
 
-public sealed class CarStatRanges
+public sealed class CarStats
 {
-	public StatRange? Power { get; set; }
+	public int Power { get; set; }
 
-	public StatRange? Braking { get; set; }
+	public int Braking { get; set; }
 
-	public StatRange? Handling { get; set; }
+	public int Handling { get; set; }
 
-	public StatRange? Tires { get; set; }
-}
-
-public sealed class StatRange
-{
-	public int Min { get; set; }
-
-	public int Max { get; set; }
+	public int Tires { get; set; }
 }

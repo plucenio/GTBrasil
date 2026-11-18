@@ -9,10 +9,10 @@
       "image": "chevette.png",
       "price": 6000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 8,
+        "braking": 5,
+        "handling": 7,
+        "tires": 6
       }
     },
     {
@@ -24,10 +24,10 @@
       "image": "corcel.png",
       "price": 5000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 6,
+        "braking": 6,
+        "handling": 5,
+        "tires": 7
       }
     },
     {
@@ -39,10 +39,10 @@
       "image": "corsa.png",
       "price": 16000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 7,
+        "braking": 8,
+        "handling": 7,
+        "tires": 6
       }
     },
     {
@@ -54,10 +54,10 @@
       "image": "celta.png",
       "price": 18000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 6,
+        "braking": 7,
+        "handling": 8,
+        "tires": 7
       }
     },
     {
@@ -69,10 +69,10 @@
       "image": "escort.png",
       "price": 11000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 7,
+        "braking": 6,
+        "handling": 7,
+        "tires": 5
       }
     },
     {
@@ -84,10 +84,10 @@
       "image": "gol.png",
       "price": 13000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 8,
+        "braking": 7,
+        "handling": 7,
+        "tires": 8
       }
     },
     {
@@ -99,10 +99,10 @@
       "image": "uno.png",
       "price": 12000,
       "stats": {
-        "power": { "min": 1, "max": 10 },
-        "braking": { "min": 1, "max": 10 },
-        "handling": { "min": 1, "max": 10 },
-        "tires": { "min": 1, "max": 10 }
+        "power": 6,
+        "braking": 6,
+        "handling": 8,
+        "tires": 7
       }
     }
   ]
