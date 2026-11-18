@@ -6,46 +6,104 @@ namespace GTBrasil;
 public sealed class InterlagosTrackDrawable : IDrawable
 {
 	private const float BaseSpeed = 105f;
-	private const float TrackMinX = 145f;
-	private const float TrackMaxX = 855f;
-	private const float TrackMinY = 90f;
-	private const float TrackMaxY = 515f;
+	private const float TrackMinX = 45f;
+	private const float TrackMaxX = 980f;
+	private const float TrackMinY = 10f;
+	private const float TrackMaxY = 610f;
 
 	private static readonly CircuitPoint[] Circuit =
 	[
-		new(790, 468, false),
-		new(700, 454, false),
-		new(610, 438, false),
-		new(520, 421, false),
-		new(455, 407, true),
-		new(407, 382, true),
-		new(388, 348, true),
-		new(410, 319, true),
-		new(463, 300, false),
-		new(535, 294, false),
-		new(610, 284, false),
-		new(674, 262, true),
-		new(723, 232, true),
-		new(744, 195, true),
-		new(721, 163, true),
-		new(674, 148, false),
-		new(597, 147, false),
-		new(520, 155, false),
-		new(445, 174, false),
-		new(376, 201, true),
-		new(326, 239, true),
-		new(300, 282, true),
-		new(318, 321, true),
-		new(365, 344, false),
-		new(431, 353, false),
-		new(494, 367, true),
-		new(522, 395, true),
-		new(505, 427, true),
-		new(527, 455, true),
-		new(581, 474, false),
-		new(653, 486, false),
-		new(724, 491, true),
-		new(776, 483, true)
+		new(930, 570, true),
+		new(947, 545, true),
+		new(956, 516, true),
+		new(947, 488, true),
+		new(930, 466, true),
+		new(908, 450, true),
+		new(922, 435, true),
+		new(945, 410, true),
+		new(950, 380, true),
+		new(938, 348, true),
+		new(918, 323, true),
+		new(898, 300, true),
+		new(887, 270, true),
+		new(884, 235, true),
+		new(870, 205, true),
+		new(850, 175, false),
+		new(780, 158, false),
+		new(700, 140, false),
+		new(610, 120, false),
+		new(520, 97, false),
+		new(430, 75, false),
+		new(350, 52, false),
+		new(288, 28, true),
+		new(255, 30, true),
+		new(225, 45, true),
+		new(203, 70, true),
+		new(195, 102, true),
+		new(205, 130, true),
+		new(230, 150, true),
+		new(260, 165, true),
+		new(300, 205, false),
+		new(340, 250, false),
+		new(380, 295, false),
+		new(420, 340, false),
+		new(465, 385, true),
+		new(500, 414, true),
+		new(515, 432, true),
+		new(532, 451, true),
+		new(535, 476, true),
+		new(515, 494, true),
+		new(485, 497, true),
+		new(455, 520, true),
+		new(425, 542, true),
+		new(390, 552, true),
+		new(365, 569, true),
+		new(337, 581, true),
+		new(325, 575, true),
+		new(298, 560, true),
+		new(269, 546, true),
+		new(241, 538, true),
+		new(223, 518, true),
+		new(225, 490, true),
+		new(246, 463, true),
+		new(275, 444, true),
+		new(255, 421, true),
+		new(225, 391, true),
+		new(191, 361, true),
+		new(151, 332, true),
+		new(115, 310, true),
+		new(95, 311, true),
+		new(78, 326, true),
+		new(70, 348, true),
+		new(76, 376, true),
+		new(87, 411, true),
+		new(105, 450, true),
+		new(119, 486, true),
+		new(120, 507, false),
+		new(220, 520, false),
+		new(340, 532, false),
+		new(480, 542, false),
+		new(620, 550, false),
+		new(760, 558, false),
+		new(850, 565, false)
+	];
+
+	private static readonly TrackMarker[] CornerMarkers =
+	[
+		new(930, 536, 1),
+		new(953, 435, 2),
+		new(835, 160, 3),
+		new(288, 18, 4),
+		new(236, 160, 5),
+		new(540, 418, 6),
+		new(500, 508, 7),
+		new(390, 570, 8),
+		new(320, 590, 9),
+		new(215, 525, 10),
+		new(270, 425, 11),
+		new(105, 294, 12),
+		new(53, 348, 13),
+		new(112, 520, 14)
 	];
 
 	private readonly float[] segmentLengths;
@@ -103,6 +161,7 @@ public sealed class InterlagosTrackDrawable : IDrawable
 		DrawCircuitLine(canvas, offsetX, offsetY, scale, 20, Color.FromArgb("#08101B"));
 		DrawCircuitLine(canvas, offsetX, offsetY, scale, 14, Color.FromArgb("#8090A4"));
 		DrawCircuitLine(canvas, offsetX, offsetY, scale, 10, Color.FromArgb("#26374B"));
+		DrawCornerMarkers(canvas, offsetX, offsetY, scale);
 		DrawStartLine(canvas, offsetX, offsetY, scale);
 		DrawCarMarker(canvas, offsetX, offsetY, scale);
 		canvas.RestoreState();
@@ -120,12 +179,32 @@ public sealed class InterlagosTrackDrawable : IDrawable
 		}
 	}
 
+	private static void DrawCornerMarkers(ICanvas canvas, float offsetX, float offsetY, float scale)
+	{
+		canvas.FontSize = 9;
+		canvas.FontColor = Color.FromArgb("#08101B");
+		foreach (var marker in CornerMarkers)
+		{
+			var point = MapPoint(new CircuitPoint(marker.X, marker.Y, false), offsetX, offsetY, scale);
+			canvas.FillColor = Color.FromArgb("#F5C451");
+			canvas.FillCircle(point.X, point.Y, 7);
+			canvas.DrawString(
+				marker.Number.ToString(),
+				point.X - 7,
+				point.Y - 7,
+				14,
+				14,
+				HorizontalAlignment.Center,
+				VerticalAlignment.Center);
+		}
+	}
+
 	private void DrawStartLine(ICanvas canvas, float offsetX, float offsetY, float scale)
 	{
 		var start = MapPoint(Circuit[0], offsetX, offsetY, scale);
-		var next = MapPoint(Circuit[1], offsetX, offsetY, scale);
-		var dx = next.X - start.X;
-		var dy = next.Y - start.Y;
+		var previous = MapPoint(Circuit[^1], offsetX, offsetY, scale);
+		var dx = start.X - previous.X;
+		var dy = start.Y - previous.Y;
 		var length = MathF.Sqrt(dx * dx + dy * dy);
 		var halfWidth = 9 * scale;
 		var perpendicularX = -dy / length * halfWidth;
@@ -202,6 +281,8 @@ public sealed class InterlagosTrackDrawable : IDrawable
 	}
 
 	private readonly record struct CircuitPoint(float X, float Y, bool IsCorner);
+
+	private readonly record struct TrackMarker(float X, float Y, int Number);
 }
 
 public readonly record struct TrackPaceWeights(int Power, int Handling, int Tires, int Braking)

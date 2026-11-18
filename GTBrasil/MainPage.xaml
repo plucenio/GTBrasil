@@ -388,7 +388,7 @@
                                        TextColor="#F5C451"
                                        AutomationId="race-pace" />
                             </Grid>
-                            <Label Text="S DO SENNA  •  RETA OPOSTA  •  JUNÇÃO"
+                            <Label Text="S DO SENNA  •  RETA OPOSTA  •  DESCIDA DO LAGO  •  FERRADURA  •  PINHEIRINHO  •  BICO DE PATO  •  MERGULHO  •  JUNÇÃO"
                                    FontSize="9"
                                    FontAttributes="Bold"
                                    CharacterSpacing="0.4"
