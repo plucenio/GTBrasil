@@ -104,6 +104,21 @@
         "handling": 8,
         "tires": 7
       }
+    },
+    {
+      "id": "vectra",
+      "brand": "Chevrolet",
+      "model": "Vectra",
+      "year": 1997,
+      "category": "SEDÃ MÉDIO  •  1990s",
+      "image": "vectra.png",
+      "price": 21000,
+      "stats": {
+        "power": 8,
+        "braking": 7,
+        "handling": 7,
+        "tires": 6
+      }
     }
   ]
 }

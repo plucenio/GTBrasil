@@ -15,17 +15,21 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 	{
 		PropertyNameCaseInsensitive = true
 	};
+	private readonly InterlagosTrackDrawable interlagosTrack = new();
 
 	private Car? selectedCar;
 	private Car? garageCar;
 	private int cashBalance;
 	private bool isClassifiedsVisible;
+	private bool isRaceVisible;
 	private bool carsLoaded;
+	private int raceAnimationGeneration;
 	private string notice = string.Empty;
 
 	public MainPage()
 	{
 		InitializeComponent();
+		InterlagosTrackView.Drawable = interlagosTrack;
 		Cars = new ObservableCollection<Car>();
 		CashBalance = Preferences.Get(CashPreferenceKey, StartingCash);
 		BindingContext = this;
@@ -38,6 +42,17 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		{
 			await LoadCarsAsync();
 		}
+
+		if (IsRaceVisible)
+		{
+			StartRaceAnimation();
+		}
+	}
+
+	protected override void OnDisappearing()
+	{
+		StopRaceAnimation();
+		base.OnDisappearing();
 	}
 
 	public ObservableCollection<Car> Cars { get; }
@@ -80,6 +95,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 			OnPropertyChanged(nameof(HasGarageCar));
 			OnPropertyChanged(nameof(IsEmptyGarageVisible));
 			OnPropertyChanged(nameof(GarageSubtitle));
+			OnPropertyChanged(nameof(RaceButtonText));
+			OnPropertyChanged(nameof(RacePaceDisplay));
 		}
 	}
 
@@ -115,11 +132,35 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 		}
 	}
 
-	public bool IsGarageVisible => !IsClassifiedsVisible;
+	public bool IsRaceVisible
+	{
+		get => isRaceVisible;
+		private set
+		{
+			if (isRaceVisible == value)
+			{
+				return;
+			}
+
+			isRaceVisible = value;
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(IsGarageVisible));
+		}
+	}
+
+	public bool IsGarageVisible => !IsClassifiedsVisible && !IsRaceVisible;
 
 	public bool HasGarageCar => GarageCar is not null;
 
 	public bool IsEmptyGarageVisible => GarageCar is null;
+
+	public string RaceButtonText => HasGarageCar ? "CORRIDA\nINTERLAGOS" : "CORRIDA\nCOMPRE UM CARRO";
+
+	public string CurrentLapDisplay => $"VOLTA {interlagosTrack.LapCount + 1}";
+
+	public string RacePaceDisplay => GarageCar is null
+		? "RITMO --"
+		: $"RITMO {(GarageCar.Power * 0.4 + GarageCar.Braking * 0.2 + GarageCar.Handling * 0.25 + GarageCar.Tires * 0.15):0.0}/10";
 
 	public string GarageSubtitle => HasGarageCar
 		? "SEU PRÓXIMO CAPÍTULO COMEÇA AQUI"
@@ -235,6 +276,8 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	private void OnClassifiedsClicked(object? sender, EventArgs e)
 	{
+		StopRaceAnimation();
+		IsRaceVisible = false;
 		Notice = string.Empty;
 		SelectedCar = null;
 		IsClassifiedsVisible = true;
@@ -242,9 +285,59 @@ public partial class MainPage : ContentPage, INotifyPropertyChanged
 
 	private void OnGarageClicked(object? sender, EventArgs e)
 	{
+		StopRaceAnimation();
+		IsRaceVisible = false;
 		Notice = string.Empty;
 		SelectedCar = null;
 		IsClassifiedsVisible = false;
+	}
+
+	private void OnRaceClicked(object? sender, EventArgs e)
+	{
+		if (GarageCar is null)
+		{
+			Notice = "COMPRE UM CARRO ANTES DE INICIAR UMA CORRIDA.";
+			return;
+		}
+
+		Notice = string.Empty;
+		SelectedCar = null;
+		IsClassifiedsVisible = false;
+		interlagosTrack.Reset();
+		OnPropertyChanged(nameof(CurrentLapDisplay));
+		IsRaceVisible = true;
+		StartRaceAnimation();
+	}
+
+	private void StartRaceAnimation()
+	{
+		var generation = ++raceAnimationGeneration;
+		var previousFrame = DateTime.UtcNow;
+		Dispatcher.StartTimer(TimeSpan.FromMilliseconds(33), () =>
+		{
+			if (generation != raceAnimationGeneration || !IsRaceVisible || GarageCar is null)
+			{
+				return false;
+			}
+
+			var now = DateTime.UtcNow;
+			var elapsedSeconds = Math.Min((now - previousFrame).TotalSeconds, 0.1);
+			previousFrame = now;
+			var previousLap = interlagosTrack.LapCount;
+			interlagosTrack.Advance(elapsedSeconds, GarageCar);
+			InterlagosTrackView.Invalidate();
+			if (interlagosTrack.LapCount != previousLap)
+			{
+				OnPropertyChanged(nameof(CurrentLapDisplay));
+			}
+
+			return true;
+		});
+	}
+
+	private void StopRaceAnimation()
+	{
+		raceAnimationGeneration++;
 	}
 
 	private void OnCarTapped(object? sender, TappedEventArgs e)

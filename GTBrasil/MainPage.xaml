@@ -294,10 +294,11 @@
                            CharacterSpacing="1"
                            TextColor="#A8B6C9" />
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                        <Button Text="CORRIDA&#10;EM BREVE"
-                                IsEnabled="False"
+                        <Button Text="{Binding RaceButtonText}"
+                                Clicked="OnRaceClicked"
+                                IsEnabled="{Binding HasGarageCar}"
                                 Background="#183148"
-                                TextColor="#B6C3D3"
+                                TextColor="#39D8E8"
                                 FontSize="11"
                                 FontAttributes="Bold"
                                 CornerRadius="7"
@@ -324,6 +325,126 @@
                                 HeightRequest="62"
                                 AutomationId="shop-button" />
                     </Grid>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsRaceVisible}" Spacing="16">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="CORRIDA"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               CharacterSpacing="1"
+                               TextColor="#F4F7FC" />
+                        <Label Text="AUTÓDROMO JOSÉ CARLOS PACE  •  INTERLAGOS"
+                               FontSize="11"
+                               CharacterSpacing="0.5"
+                               TextColor="#A8B6C9" />
+                    </VerticalStackLayout>
+
+                    <Button Text="VOLTAR À GARAGEM"
+                            Clicked="OnGarageClicked"
+                            Background="#183148"
+                            TextColor="#F4F7FC"
+                            FontSize="11"
+                            FontAttributes="Bold"
+                            CornerRadius="7"
+                            HeightRequest="42"
+                            AutomationId="back-to-garage-from-race-button" />
+
+                    <Border Padding="12"
+                            Background="#111B2B"
+                            Stroke="#263B57"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10">
+                        <VerticalStackLayout Spacing="10">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="CIRCUITO DE INTERLAGOS"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       CharacterSpacing="0.5"
+                                       TextColor="#F4F7FC" />
+                                <Label Grid.Column="1"
+                                       Text="SÃO PAULO / BR"
+                                       FontSize="10"
+                                       FontAttributes="Bold"
+                                       TextColor="#39D8E8"
+                                       VerticalOptions="Center" />
+                            </Grid>
+
+                            <GraphicsView x:Name="InterlagosTrackView"
+                                          HeightRequest="300"
+                                          Background="#0B1422"
+                                          AutomationId="interlagos-track" />
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="{Binding CurrentLapDisplay}"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="#F4F7FC"
+                                       AutomationId="race-lap" />
+                                <Label Grid.Column="1"
+                                       Text="{Binding RacePaceDisplay}"
+                                       FontSize="11"
+                                       FontAttributes="Bold"
+                                       TextColor="#F5C451"
+                                       AutomationId="race-pace" />
+                            </Grid>
+                            <Label Text="S DO SENNA  •  RETA OPOSTA  •  JUNÇÃO"
+                                   FontSize="9"
+                                   FontAttributes="Bold"
+                                   CharacterSpacing="0.4"
+                                   TextColor="#A8B6C9" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Padding="14"
+                            Background="#111B2B"
+                            Stroke="#263B57"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 10">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{Binding GarageCar.Name}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   TextColor="#F4F7FC" />
+                            <Grid ColumnDefinitions="*,*"
+                                  RowDefinitions="Auto,Auto"
+                                  ColumnSpacing="16"
+                                  RowSpacing="10">
+                                <VerticalStackLayout Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="POTÊNCIA" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Power, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.PowerProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="FRENAGEM" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Braking, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.BrakingProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Row="1" Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="DIRIGIBILIDADE" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Handling, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.HandlingProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="3">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="PNEUS" FontSize="10" FontAttributes="Bold" TextColor="#B6C3D3" />
+                                        <Label Grid.Column="1" Text="{Binding GarageCar.Tires, StringFormat='{0}/10'}" FontSize="10" FontAttributes="Bold" TextColor="#F5C451" />
+                                    </Grid>
+                                    <ProgressBar Progress="{Binding GarageCar.TiresProgress}" ProgressColor="#39D8E8" Background="#27364B" HeightRequest="5" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label Text="POTÊNCIA INFLUENCIA AS RETAS; FRENAGEM, DIRIGIBILIDADE E PNEUS AFETAM AS CURVAS."
+                                   FontSize="9"
+                                   CharacterSpacing="0.2"
+                                   TextColor="#A8B6C9" />
+                        </VerticalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
